@@ -40,6 +40,7 @@ use stdClass;
  * @package local_autogroup\domain
  */
 class carriera extends sort_module {
+
     /**
      * @param stdClass $config
      * @param int $courseid
@@ -78,17 +79,20 @@ class carriera extends sort_module {
      * @param stdClass $user
      * @return array $result
      */
-    public function eligible_groups_for_user(stdClass $user) {
-        $carriera = $this->get_carriera($user);
-        if (!$carriera) {
-            return array();
+    public function eligible_groups_for_user(stdClass $user): array {
+        $groups = [];
+        $listcds = $this->get_cds();
+        foreach ($listcds as $cds) {
+            $carriera = $this->get_carriera($user, $cds);
+            if (!$carriera) {
+                continue;
+            }
+            $field = $this->field;
+            if (isset($carriera[$field]) && !empty($carriera[$field])) {
+                $groups[] = $this->get_config_options()[$field] . ' - ' . $carriera[$field];
+            }
         }
-        $field = $this->field;
-        if (isset($carriera[$field]) && !empty($carriera[$field])) {
-            return array($this->get_config_options()[$field] . ' - ' . $carriera[$field]);
-        }
-
-        return [];
+        return $groups;
     }
 
     /**
@@ -120,19 +124,30 @@ class carriera extends sort_module {
      */
     private $field = '';
 
-    private function get_carriera(stdClass $user) {
-        $cds = $this->get_cds();
+    /**
+     * Get specific career info
+     *
+     * @param stdClass $user
+     * @param string $cds
+     * @return mixed
+     */
+    private function get_carriera(stdClass $user, string $cds) {
         $unimibdataservice = new local_unimibdatamanager\unimibdata_service(new \text_progress_trace());
         return $unimibdataservice->get_carriera_by_moodle_username_and_cds($user->username, $cds);
     }
 
-    private function get_cds() {
+    /**
+     * Get list of all cds
+     *
+     * @return array
+     */
+    private function get_cds(): array {
         global $DB;
         $cdsfieldid = $DB->get_record('customfield_field',
             ['shortname' => 'cds'], '*', MUST_EXIST);
         $cds = $DB->get_record('customfield_data',
             ['fieldid' => $cdsfieldid->id, 'instanceid' => $this->courseid], '*', MUST_EXIST);
-        return $cds->value;
+        return explode(",", $cds->value);
     }
 
 }
