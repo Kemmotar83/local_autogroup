@@ -29,7 +29,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->libdir . '/outputrenderers.php');
 
 class local_autogroup_renderer extends plugin_renderer_base {
     const URL_COURSE_SETTINGS = '/local/autogroup/edit.php';
@@ -97,8 +96,8 @@ class local_autogroup_renderer extends plugin_renderer_base {
         // Get the groupset type.
         $row [] = ucfirst(local_autogroup_sanitise_sort_module_name($groupset->sortmodule));
 
-        // Get the grouping by text.
-        $row [] = ucfirst($groupset->grouping_by());
+        // Get the grouping by text which is used in the edit screen.
+        $row [] = ucfirst($groupset->grouping_by_text());
 
         // Get the count of groups.
         $row [] = $groupset->get_group_count();

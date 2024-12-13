@@ -82,7 +82,7 @@ class user_info_field extends sort_module {
         $infofields = $DB->get_records('user_info_field');
 
         foreach ($infofields as $field) {
-            $options[$field->id] = $field->name;
+            $options[$field->id] = format_string($field->name);
         }
         return $options;
     }
@@ -116,6 +116,13 @@ class user_info_field extends sort_module {
             return false;
         }
         return (string)$field;
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function grouping_by_text() {
+        return ucfirst(format_string($this->grouping_by()));
     }
 
 }
