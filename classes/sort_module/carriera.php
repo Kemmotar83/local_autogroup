@@ -87,25 +87,52 @@ class carriera extends sort_module {
             if (!$carriera) {
                 continue;
             }
-            $field = $this->field;
-            if (isset($carriera[$field]) && !empty($carriera[$field])) {
-                $groups[] = $this->get_config_options()[$field] . ' - ' . $carriera[$field];
+            $fields = explode("-", $this->field);
+            $search = [];
+            $replace = [];
+            foreach ($fields as $fieldname) {
+                if (!empty($carriera[$fieldname])) {
+                    $search[] = '{' . $fieldname . '}';
+                    $replace[] = $carriera[$fieldname];
+                }
             }
+            $groupname = $this->get_config_options_groupname()[$this->field];
+            $groups[] = str_replace($search, $replace, $groupname);
         }
         return $groups;
     }
 
     /**
-     * Returns the options to be displayed on the autgroup_set
+     * Returns the options to be displayed on the autogroup_set
      * editing form. These are defined per-module.
      *
      * @return array
      */
-    public function get_config_options() {
-        $options = array(
+    public function get_config_options(): array {
+        $options = [
             'annoRegolamento' => 'Anno regolamento (coorte)',
             'annoCorso' => 'Anno corso',
-        );
+            'codiceCds' => 'Cds',
+            'codiceCds-annoCorso' => 'Cds | Anno corso',
+            'codiceCds-annoRegolamento' => 'Cds | Anno regolamento (coorte)',
+        ];
+        return $options;
+    }
+
+    /**
+     * Returns the options to be displayed on the autogroup_set
+     * editing form. These are defined per-module.
+     *
+     * @return array
+     */
+    public function get_config_options_groupname(): array {
+        $options = [
+            'annoRegolamento' => 'Anno regolamento (coorte) - {annoRegolamento}',
+            'annoCorso' => 'Anno corso - {annoCorso}',
+            'codiceCds' => 'Cds - {codiceCds}',
+            'codiceCds-annoCorso' => 'Cds - {codiceCds} | Anno corso - {annoCorso}',
+            'codiceCds-annoRegolamento' => 'Cds - {codiceCds} | Anno regolamento (coorte) - {annoRegolamento}',
+        ];
         return $options;
     }
 
