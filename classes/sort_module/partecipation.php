@@ -113,6 +113,14 @@ class partecipation extends sort_module {
         return (string)$this->field;
     }
 
+    public function grouping_by_text() {
+        if (empty ($this->field)) {
+            return false;
+        }
+        $options = $this->get_config_options();
+        return isset($options[$this->field]) ? $options[$this->field] : $this->field;
+    }
+
     /**
      * @var string
      */
@@ -148,5 +156,4 @@ class partecipation extends sort_module {
         }
         return $partecipation;
     }
-
 }

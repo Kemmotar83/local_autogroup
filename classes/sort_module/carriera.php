@@ -147,6 +147,19 @@ class carriera extends sort_module {
     }
 
     /**
+     * Returns the grouping text based on the field.
+     *
+     * @return string
+     */
+    public function grouping_by_text(): string {
+        if (empty ($this->field)) {
+            return false;
+        }
+        $options = $this->get_config_options();
+        return isset($options[$this->field]) ? $options[$this->field] : $this->field;
+    }
+
+    /**
      * @var string
      */
     private $field = '';
@@ -176,5 +189,4 @@ class carriera extends sort_module {
             ['fieldid' => $cdsfieldid->id, 'instanceid' => $this->courseid], '*', MUST_EXIST);
         return explode(",", $cds->value);
     }
-
 }
